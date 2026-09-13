@@ -1,17 +1,15 @@
 ```
 # Compiled and build artifacts
+grape
 *.o
 *.obj
 *.out
-build/
-dist/
 
 # Dependencies
 node_modules/
-venv/
 .venv/
+venv/
 __pycache__/
-*.pyc
 
 # Logs and temp files
 *.log
@@ -22,12 +20,13 @@ __pycache__/
 .vscode/
 .idea/
 
-# System files
-.DS_Store
-Thumbs.db
-
 # Environment
 .env
 .env.local
 *.env.*
+
+# Build directories
+build/
+dist/
+target/
 ```
