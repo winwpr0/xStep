@@ -1,0 +1,354 @@
+// ============================================================
+// Grape Language - Demo Program
+// Based on the reference syntax
+// ============================================================
+
+#use "xslibc"
+#use "xstep/ui"
+
+// ==================== ВЛОЖЕННЫЕ ФУНКЦИИ ====================
+
+int32 outer_function(int32 x) {
+    
+    // Вложенная функция #1
+    int32 inner_add(int32 y) {
+        return x + y;
+    }
+    
+    // Вложенная функция #2 (ещё глубже)
+    int32 super_inner(int32 z) {
+        
+        // Совсем глубоко
+        int32 ultra_deep(int32 w) {
+            return z * w;
+        }
+        
+        return ultra_deep(2) + x;
+    }
+    
+    return inner_add(10) + super_inner(5);
+}
+
+// ==================== БЕЗАРГУМЕНТНЫЕ ФУНКЦИИ (БЕЗ СКОБОК) ====================
+
+// Функция вообще без ничего
+int32 get_magic_number {
+    return 42;
+}
+
+// Функция которая что-то делает
+void print_hello {
+    xsh.println("Hello from Grape!");
+}
+
+// Вызов без скобок
+int32 magic = get_magic_number;
+print_hello;
+
+// ==================== ФУНКЦИИ С [] АРГУМЕНТАМИ ====================
+
+// Функция с квадратными скобками
+int32 calculate[int32 a, int32 b] {
+    return a * b + 100;
+}
+
+// Вызов
+int32 result = calculate[5, 10];  // 150
+
+// Функция с одним аргументом в []
+string greet[string name] {
+    return $"Hello, {name}!";
+}
+
+string greeting = greet["Vladislav"];
+
+// ==================== КОРОБКИ С БОБАМИ ====================
+
+// Коробка (контейнер)
+class Box[T] {
+    private T content;
+    private int32 bean_count;
+    
+    // Конструктор
+    public this[T initial] {
+        content = initial;
+        bean_count = 0;
+    }
+    
+    // Положить боб
+    public void add_bean[string bean_type] {
+        bean_count++;
+        xsh.println($"Added {bean_type} bean. Total: {bean_count}");
+    }
+    
+    // Взять боб
+    public string take_bean {
+        if (bean_count > 0) {
+            bean_count--;
+            return "Bean taken!";
+        }
+        return "No beans left!";
+    }
+    
+    // Сколько бобов
+    public int32 beans_count {
+        return bean_count;
+    }
+    
+    // Содержимое коробки
+    public T get_content {
+        return content;
+    }
+}
+
+// Использование
+Box[int32] numbers_box = Box[42];
+numbers_box.add_bean["magic"];
+numbers_box.add_bean["lucky"];
+numbers_box.add_bean["super"];
+
+int32 beans = numbers_box.beans_count;  // 3
+string status = numbers_box.take_bean;   // "Bean taken!"
+
+// ==================== КОРОБКА С РАЗНЫМИ БОБАМИ ====================
+
+class BeanBox {
+    private string[] beans;
+    
+    public this {
+        beans = [];
+    }
+    
+    // Добавить боб любого типа
+    public void put[any bean] {
+        beans.push(bean.to_string());
+    }
+    
+    // Показать все бобы
+    public void show_beans {
+        xsh.println("=== BEANS IN BOX ===");
+        for (string bean : beans) {
+            xsh.println($"🫘 {bean}");
+        }
+        xsh.println($"Total: {beans.length} beans");
+    }
+    
+    // Взять случайный боб
+    public string take_random_bean {
+        if (beans.length > 0) {
+            int32 idx = random.int(0, beans.length - 1);
+            string bean = beans[idx];
+            beans.remove_at(idx);
+            return bean;
+        }
+        return "Box is empty!";
+    }
+}
+
+// Создаём коробку с бобами
+BeanBox my_box = BeanBox();
+my_box.put[42];
+my_box.put["magic bean"];
+my_box.put[3.14];
+my_box.put[true];
+my_box.put["golden bean"];
+
+my_box.show_beans();
+
+// ==================== ФУНКЦИИ ВНУТРИ КЛАССОВ ====================
+
+class Calculator {
+    private int32 result;
+    
+    public this {
+        result = 0;
+    }
+    
+    // Вложенная функция внутри метода
+    public int32 complex_calculation[int32 x, int32 y] {
+        
+        // Локальная функция
+        int32 square[int32 n] {
+            return n * n;
+        }
+        
+        // Ещё одна вложенная
+        int32 add_squares[int32 a, int32 b] {
+            return square(a) + square(b);
+        }
+        
+        result = add_squares(x, y) * 2;
+        return result;
+    }
+}
+
+Calculator calc = Calculator();
+int32 res = calc.complex_calculation[3, 4];  // (9 + 16) * 2 = 50
+
+// ==================== АНОНИМНЫЕ ФУНКЦИИ (LAMBDA) ====================
+
+// Lambda без скобок
+var double_it = fn[int32 x] => x * 2;
+
+// Lambda с []
+var multiply = fn[int32 a, int32 b] => a * b;
+
+int32 doubled = double_it[21];      // 42
+int32 multiplied = multiply[6, 7];  // 42
+
+// ==================== ФУНКЦИИ КОТОРЫЕ ВОЗВРАЩАЮТ ФУНКЦИИ ====================
+
+// Функция создающая функцию
+fn[int32] make_multiplier[int32 factor] {
+    return fn[int32 x] => x * factor;
+}
+
+var times_5 = make_multiplier[5];
+var times_10 = make_multiplier[10];
+
+int32 r1 = times_5[3];   // 15
+int32 r2 = times_10[3];  // 30
+
+// ==================== КОРОБКА С ФУНКЦИЯМИ-БОБАМИ ====================
+
+class FunctionBox {
+    private fn[int32][] functions;
+    
+    public this {
+        functions = [];
+    }
+    
+    // Положить функцию-боб
+    public void add_function[fn[int32] func] {
+        functions.push(func);
+    }
+    
+    // Применить все функции
+    public int32[] apply_all[int32 value] {
+        int32[] results = [];
+        for (fn[int32] func : functions) {
+            results.push(func[value]);
+        }
+        return results;
+    }
+}
+
+FunctionBox func_box = FunctionBox();
+func_box.add_function[fn[int32 x] => x + 1];
+func_box.add_function[fn[int32 x] => x * 2];
+func_box.add_function[fn[int32 x] => x - 5];
+
+int32[] results = func_box.apply_all[10];  // [11, 20, 5]
+
+// ==================== РЕКУРСИВНЫЕ ВЛОЖЕННЫЕ ФУНКЦИИ ====================
+
+int32 fibonacci[int32 n] {
+    
+    // Вложенная рекурсивная функция
+    int32 fib[int32 k] {
+        if (k <= 1) {
+            return k;
+        }
+        return fib[k - 1] + fib[k - 2];
+    }
+    
+    return fib[n];
+}
+
+int32 fib_10 = fibonacci[10];  // 55
+
+// ==================== ФУНКЦИИ С ОПЦИОНАЛЬНЫМИ [] АРГУМЕНТАМИ ====================
+
+// Функция с дефолтными значениями в []
+string create_message[string text, string prefix = "INFO", string suffix = "!"] {
+    return $"{prefix}: {text}{suffix}";
+}
+
+string msg1 = create_message["Hello"];  
+// "INFO: Hello!"
+
+string msg2 = create_message["Warning", "WARN"];  
+// "WARN: Warning!"
+
+string msg3 = create_message["Complete", "SUCCESS", " ✓"];  
+// "SUCCESS: Complete ✓"
+
+// ==================== КОРОБКА КОТОРАЯ ХРАНИТ КОРОБКИ ====================
+
+class MegaBox[T] {
+    private Box[T][] boxes;
+    
+    public this {
+        boxes = [];
+    }
+    
+    // Добавить коробку
+    public void add_box[Box[T] box] {
+        boxes.push(box);
+    }
+    
+    // Посчитать все бобы
+    public int32 total_beans {
+        int32 total = 0;
+        for (Box[T] box : boxes) {
+            total += box.beans_count;
+        }
+        return total;
+    }
+    
+    // Показать статистику
+    public void stats {
+        xsh.println($"=== MEGABOX STATS ===");
+        xsh.println($"Boxes: {boxes.length}");
+        xsh.println($"Total beans: {total_beans}");
+    }
+}
+
+// Создаём мега-коробку
+MegaBox[int32] mega = MegaBox();
+mega.add_box[Box[int32](100)];
+mega.add_box[Box[int32](200)];
+mega.add_box[Box[int32](300)];
+
+mega.stats();
+
+// ==================== ФУНКЦИИ БЕЗ ВОЗВРАТА (void) БЕЗ СКОБОК ====================
+
+void do_something {
+    xsh.println("Doing something...");
+}
+
+void do_nothing {
+    // Ничего не делаем
+}
+
+// Вызов
+do_something;
+do_nothing;
+
+// ==================== ГЛАВНАЯ ФУНКЦИЯ ====================
+
+int main {
+    xsh.println("=== GRAPE LANGUAGE DEMO ===");
+    xsh.println("");
+    
+    // Вложенные функции
+    int32 result = outer_function[5];
+    xsh.println($"Outer function result: {result}");
+    
+    // Коробка с бобами
+    BeanBox box = BeanBox();
+    box.put["magic"];
+    box.put["lucky"];
+    box.put["golden"];
+    box.show_beans();
+    
+    // Функции
+    xsh.println($"Magic number: {get_magic_number}");
+    print_hello;
+    
+    xsh.println("");
+    xsh.println("All done! ");
+    
+    return 0;
+}
